@@ -1,0 +1,112 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE sqlMap
+PUBLIC "-//ibatis.apache.org//DTD SQL Map 2.0//EN"
+"http://ibatis.apache.org/dtd/sql-map-2.dtd">
+		
+<sqlMap>
+	<typeAlias alias="bbsb" type="com.busanit.model.BBSBean" />
+	<typeAlias alias="rb" type="com.busanit.model.RegisterBean"/>
+	
+	<select id="SelectAll" parameterClass="java.util.HashMap" resultClass="bbsb" >
+		<!-- select num, id, nicname, content, time, picture1, picture2, clicknum from (select * from (select rownum rn, aa.* from bbsinfo aa order by num desc)) where rn between #pagefirst# and #pagelast#  -->
+		select num, id, nicname, content, time, picture1, picture2, clicknum from (select rownum rn, aa.* from (select * from bbsinfo order by num desc) aa) where rn between #pagefirst# and #pagelast# 
+	</select>
+	
+	<select id="SelectFriend" parameterClass="String" resultClass="bbsb">
+		select * from bbsinfo where id = #id#
+	
+	</select>
+	<select id="SelectId" parameterClass="java.util.HashMap" resultClass="bbsb" >
+		select num, id, nicname, content, time, picture1, picture2, clicknum from (select rownum rn, aa.* from  (select * from bbsinfo where id = #id# order by num desc) aa) where rn between #pagefirst# and #pagelast#
+	</select>
+	
+	<select id="getfriend" parameterClass="java.util.HashMap" resultClass="bbsb">
+<!-- 		select num, id, nicname, content, time, picture1,picture2, clicknum
+		 from (select rownum rn, bbs.* from bbsinfo bbs, friendinfo friend where bbs.id = #id# and friend.id = #id#)
+		  where rn between #pagefirst# and #pagelast# -->
+		  
+		 <!--20160623주석 -->
+		<!-- select num, id, nicname, content, time, picture1,picture2, clicknum from (select rownum rn, bbs.* from bbsinfo bbs where id = #id# or id in (select friendid from friendinfo where id = #id#) order by num desc) where rn between #pagefirst# and #pagelast# -->
+		select num, id, nicname, content, time, picture1,picture2, clicknum from (select rownum rn, bbs.* from (select * from bbsinfo where id = #id# or id in (select friendid from friendinfo where id = #id#) order by num desc) bbs) where rn between #pagefirst# and #pagelast#
+	</select>
+	
+	<!-- 추가삭제부분 -->
+	<insert id="insertdata" parameterClass="rb">
+	insert into registerinfo values (registerinfo_seq.nextval,#id#,#nicname#,#password#,#email#,to_char(sysdate, 'yyyy-mm-dd hh24:mi:ss'),#tel#,#introduce#, #picture#)
+	</insert>
+	
+	<select id="listdata" parameterClass="String" resultClass="rb">
+	select * from registerinfo where id = #id#
+	</select>
+	
+	<update id="update" parameterClass="rb">
+	update registerinfo set nicname=#nicname#,password=#password#,email=#email#,tel=#tel#,introduce=#introduce#, picture = #picture# where id=#id#
+	</update>
+	
+	<update id="updatenopic" parameterClass="rb">
+		update registerinfo set nicname=#nicname#,password=#password#,email=#email#,tel=#tel#,introduce=#introduce# where id = #id#
+	</update>
+	
+	<select id="loginSelect" parameterClass = "String" resultClass="String">
+		select password from registerinfo where id = #id#
+	</select> 
+	
+	<delete id="deleteid" parameterClass="String">
+		delete from registerinfo where id = #id#
+	</delete>
+	
+	<delete id="deletebbs" parameterClass="String">
+		delete from bbsinfo where id = #id#
+	</delete>
+	
+	<delete id="deletefriend" parameterClass="String">
+		delete from firendinfo where id = #id#
+	</delete>
+	
+	<select id="lookdata" resultClass="bbsb" parameterClass="String">
+		select * from bbsinfo where id like '%'||#bak#||'%' or content like '%'||#bak#||'%' order by num desc
+		<!-- select id,nicname,time,content,picture1 from
+		 (select rownum rw, bbs.* from bbsinfo bbs,friendinfo friend 
+		 where bbs.id = friend.id and 
+		 (bbs.id like '%'||#bak#||'%' or bbs.content like '%'||#bak#||'%')) -->
+	</select>
+
+	<insert id="insertbbs" parameterClass="bbsb">	
+		insert into bbsinfo values (bbsinfo_seq.nextval,#id#,#nicname#,#content# ,to_char(sysdate, 'yyyy-mm-dd hh24:mi:ss'),#picture1#,#picture2#,#clicknum#) 
+	</insert>	
+	
+	<select id="selectsogae" parameterClass="String" resultClass="rb">
+		select * from registerinfo where id = #id#
+	</select>
+
+	<select id="selectidpic" parameterClass="String" resultClass="rb">
+		select * from registerinfo where id = #id#
+	</select>
+	
+	<select id="selecttakepic" parameterClass="String" resultClass="rb">
+		select * from registerinfo where id = #id#
+	</select>
+	
+		<select id="retwitdata" parameterClass="String" resultClass="bbsb">
+	select * from bbsinfo where num = #number1#
+	</select>
+	
+	<select id="retwitlistdata" resultClass="bbsb" parameterClass="java.util.HashMap">
+	select num, id, nicname, content, time, picture1, picture2, clicknum from (select rownum rn, aa.* from (select * from bbsinfo where clicknum = #number1# order by num desc) aa) where rn between #pagefirst# and #pagelast#
+	
+	</select>
+	
+		<!-- 친구정보입력 -->
+	<insert id="frienddata" parameterClass="java.util.HashMap">
+		insert into friendinfo values(friendinfo_seq.nextval,#myid#,#friendid#)
+	</insert>
+	<select id="fsearchdata" parameterClass="String" resultClass="rb">
+	<!-- 닉네임으로 친구검색  -->
+		select * from registerinfo where nicname like '%'||#fsearch#||'%'
+	</select>
+	
+	<select id="iddata" parameterClass="String" resultClass="String">
+		select id from registerinfo where id = #id#
+	</select>
+
+</sqlMap>
