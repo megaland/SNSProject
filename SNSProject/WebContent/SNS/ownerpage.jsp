@@ -137,7 +137,7 @@ function friendsearch(){
 </head>
 <body>
 <div id="all" ></div>
-<%@ include file="toppart.jsp"%>
+<%@ include file="toppart.jsp"%>	
 
 <div  class="styleleft">  
 	<br>

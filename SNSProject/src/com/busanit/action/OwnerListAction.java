@@ -20,7 +20,6 @@ import com.busanit.model.BBSBean;
 import com.busanit.model.FriendBean;
 import com.busanit.model.RegisterBean;
 import com.ibatis.sqlmap.client.SqlMapClient;
-import com.sun.org.apache.bcel.internal.generic.LUSHR;
 
 /**
  * Servlet implementation class ListAction
